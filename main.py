@@ -3,33 +3,24 @@ import matplotlib.pyplot as plt
 import re
 import cartopy.crs as ccrs
 import pathlib
+import gpxpy
 
 
-def get_lon_lat_lists(root):
-    """Creates an xml tree and outputs a list of longitude and latitude"""
-    tree = ET.parse(f"{track_file}")
-    root = tree.getroot()
-
-    # Find the correct namespace for the gpx file
-    namespace_search = re.search(r"\{(.*?)\}", root.tag)
-    if namespace_search:
-        namespace = namespace_search.group(1)
-
-    latitude_list = []
+def get_lon_lat_lists(file):
     longitude_list = []
-    coordinates_list = []
+    latitude_list = []
+    with open(file) as gpx_file:
 
-    for coordinate in root.iter(f"{{{namespace}}}trkpt"):
-        coordinates_list.append(
-            (
-                float(coordinate.attrib.get("lat")),
-                float(coordinate.attrib.get("lon")),
-            )
-        )
-        latitude_list.append(float(coordinate.attrib.get("lat")))
-        longitude_list.append(float(coordinate.attrib.get("lon")))
+        gpx = gpxpy.parse(gpx_file)
 
-    return longitude_list, latitude_list, coordinates_list
+        for track in gpx.tracks:
+            for segment in track.segments:
+                for point in segment.points:
+                    longitude_list.append(point.longitude), latitude_list.append(
+                        point.latitude
+                    )
+
+        return longitude_list, latitude_list
 
 
 def plot_track(longitude_list, latitude_list):
@@ -49,9 +40,7 @@ if __name__ == "__main__":
 
     for track_file in pathlib.Path("tracks").iterdir():
         if track_file.is_file():
-            longitude_list, latitude_list, coordinates_list = get_lon_lat_lists(
-                track_file
-            )
+            longitude_list, latitude_list = get_lon_lat_lists(track_file)
             complete_longitudes.extend(longitude_list)
             complete_latitudes.extend(latitude_list)
             #  plot_track(longitude_list, latitude_list)
