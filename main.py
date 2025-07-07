@@ -4,6 +4,8 @@ import re
 import cartopy.crs as ccrs
 import pathlib
 import gpxpy
+import random
+import os
 
 
 def get_lon_lat_lists(file):
@@ -34,7 +36,7 @@ def plot_track(longitude_list, latitude_list):
     plt.show()
 
 
-if __name__ == "__main__":
+def combine_tracks(folder):
     complete_longitudes = []
     complete_latitudes = []
 
@@ -43,5 +45,32 @@ if __name__ == "__main__":
             longitude_list, latitude_list = get_lon_lat_lists(track_file)
             complete_longitudes.extend(longitude_list)
             complete_latitudes.extend(latitude_list)
-            #  plot_track(longitude_list, latitude_list)
-    plot_track(complete_longitudes, complete_latitudes)
+    return complete_longitudes, complete_latitudes
+
+
+def choose_random_track(folder):
+
+    file_list = []
+
+    for f in os.listdir(folder):
+        full_path = os.path.join(folder, f)
+        if os.path.isfile(full_path):
+            file_list.append(f)
+
+    random_track = random.choice(file_list)
+    random_track_full_path = os.path.join(folder, random_track)
+
+    longitude_list = []
+    latitude_list = []
+
+    longitude_list, latitude_list = get_lon_lat_lists(random_track_full_path)
+
+    return longitude_list, latitude_list
+
+
+if __name__ == "__main__":
+    gpx_tracks_folder = "tracks"
+    # combine_tracks(gpx_tracks_folder)
+    # choose_random_track(gpx_tracks_folder)
+    plot_track(*choose_random_track(gpx_tracks_folder))
+    # plot_track(combine_tracks(gpx_tracks_folder))
