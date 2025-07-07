@@ -1,6 +1,4 @@
-import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
-import re
 import cartopy.crs as ccrs
 import pathlib
 import gpxpy
@@ -8,9 +6,12 @@ import random
 import os
 
 
-def get_lon_lat_lists(file):
+def convert_to_lists(file):
     longitude_list = []
     latitude_list = []
+    height_list = []
+    speed_list = []
+    hdop_list = []
     with open(file) as gpx_file:
 
         gpx = gpxpy.parse(gpx_file)
@@ -20,17 +21,27 @@ def get_lon_lat_lists(file):
                 for point in segment.points:
                     longitude_list.append(point.longitude), latitude_list.append(
                         point.latitude
+                    ), height_list.append(point.elevation), speed_list.append(
+                        point.speed
+                    ), hdop_list.append(
+                        point.horizontal_dilution
                     )
 
-        return longitude_list, latitude_list
+        return longitude_list, latitude_list, height_list, speed_list, hdop_list
 
 
-def plot_track(longitude_list, latitude_list):
+def plot_track(longitude_list, latitude_list, hdop_list, alpha_list):
 
     fig = plt.figure()
     ax = plt.axes(projection=ccrs.Mercator())
 
-    ax.scatter(longitude_list, latitude_list, transform=ccrs.PlateCarree(), s=1)
+    ax.scatter(
+        longitude_list,
+        latitude_list,
+        transform=ccrs.PlateCarree(),
+        s=hdop_list,
+        alpha=alpha_list,
+    )
 
     plt.title(f"GPX Tracks")
     plt.show()
@@ -39,13 +50,17 @@ def plot_track(longitude_list, latitude_list):
 def combine_tracks(folder):
     complete_longitudes = []
     complete_latitudes = []
+    complete_hdop = []
 
     for track_file in pathlib.Path("tracks").iterdir():
         if track_file.is_file():
-            longitude_list, latitude_list = get_lon_lat_lists(track_file)
+            longitude_list, latitude_list, height, speed, hdop = convert_to_lists(
+                track_file
+            )
             complete_longitudes.extend(longitude_list)
             complete_latitudes.extend(latitude_list)
-    return complete_longitudes, complete_latitudes
+            complete_hdop.extend(hdop)
+    return complete_longitudes, complete_latitudes, complete_hdop
 
 
 def choose_random_track(folder):
@@ -60,17 +75,22 @@ def choose_random_track(folder):
     random_track = random.choice(file_list)
     random_track_full_path = os.path.join(folder, random_track)
 
-    longitude_list = []
-    latitude_list = []
+    return random_track_full_path
 
-    longitude_list, latitude_list = get_lon_lat_lists(random_track_full_path)
 
-    return longitude_list, latitude_list
+# def track_infos(track)
 
 
 if __name__ == "__main__":
     gpx_tracks_folder = "tracks"
     # combine_tracks(gpx_tracks_folder)
     # choose_random_track(gpx_tracks_folder)
-    plot_track(*choose_random_track(gpx_tracks_folder))
-    # plot_track(combine_tracks(gpx_tracks_folder))
+    # random_track = choose_random_track(gpx_tracks_folder)
+    # lon, lat, height, speed, hdop = convert_to_lists(random_track)
+
+    # plot_track(lon, lat, hdop)
+
+    lon, lat, hdop = combine_tracks(gpx_tracks_folder)
+    talpha = [min(1 / i, 1) for i in hdop]
+
+    plot_track(lon, lat, hdop, talpha)
