@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 import re
 import cartopy.crs as ccrs
+import pathlib
 
 
 def get_lon_lat_lists(root):
@@ -31,15 +32,19 @@ def get_lon_lat_lists(root):
 
 if __name__ == "__main__":
 
-    tree = ET.parse("test2.gpx")
-    root = tree.getroot()
+    for track_file in pathlib.Path("tracks").iterdir():
+        if track_file.is_file():  # skip sub-directories
+            print(track_file.name)
 
-    longitude_list, latitude_list, coordinates_list = get_lon_lat_lists(root)
+            tree = ET.parse(f"{track_file}")
+            root = tree.getroot()
 
-    fig = plt.figure()
-    ax = plt.axes(projection=ccrs.Mercator())
+            longitude_list, latitude_list, coordinates_list = get_lon_lat_lists(root)
 
-    ax.scatter(longitude_list, latitude_list, transform=ccrs.PlateCarree(), s=1)
+            fig = plt.figure()
+            ax = plt.axes(projection=ccrs.Mercator())
 
-    plt.title("Multiple GPX Tracks (Geographically Accurate)")
-    plt.show()
+            ax.scatter(longitude_list, latitude_list, transform=ccrs.PlateCarree(), s=1)
+
+            plt.title("Multiple GPX Tracks (Geographically Accurate)")
+            plt.show()
