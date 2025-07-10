@@ -7,7 +7,9 @@ import os
 import pandas as pd
 
 
-def convert_to_lists(file):
+def parse_gpx_to_dataframe(file) -> pd.DataFrame:
+    """Takes a gpx file and uses gpxpy to transform it into a pandas dataframe"""
+
     longitude_list = []
     latitude_list = []
     height_list = []
@@ -31,7 +33,7 @@ def convert_to_lists(file):
                         point.time
                     )
 
-        dict = {
+        gpx_dict = {
             "longitude": longitude_list,
             "latitude": latitude_list,
             "height": height_list,
@@ -40,12 +42,13 @@ def convert_to_lists(file):
             "time": time_list,
         }
 
-        df = pd.DataFrame(dict)
+        df = pd.DataFrame(gpx_dict)
 
         return df
 
 
 def plot_track(df):
+    """Takes a dataframe and visualises it with a matplotlib chart"""
 
     fig = plt.figure()
     ax = plt.axes(projection=ccrs.Mercator())
@@ -62,12 +65,13 @@ def plot_track(df):
     plt.show()
 
 
-def combine_tracks(folder):
+def combine_tracks(folder) -> pd.DataFrame:
+    """Takes a folder as input and returns all gpx files combined into a single dataframe"""
     combined_df = pd.DataFrame()
 
     for track_file in pathlib.Path("tracks").iterdir():
         if track_file.is_file():
-            track_df = convert_to_lists(track_file)
+            track_df = parse_gpx_to_dataframe(track_file)
         combined_df = (
             pd.concat([combined_df, track_df]).reset_index().drop("index", axis=1)
         )
@@ -75,7 +79,7 @@ def combine_tracks(folder):
 
 
 def choose_random_track(folder):
-
+    """Takes a folder path as input and returns a random file path from within that folder"""
     file_list = []
 
     for f in os.listdir(folder):
@@ -97,7 +101,7 @@ if __name__ == "__main__":
     # combine_tracks(gpx_tracks_folder)
     # choose_random_track(gpx_tracks_folder)
     random_track = choose_random_track(gpx_tracks_folder)
-    df_random_track = convert_to_lists(random_track)
+    df_random_track = parse_gpx_to_dataframe(random_track)
 
     # plot_track(lon, lat, hdop)
 
