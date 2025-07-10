@@ -4,6 +4,7 @@ import pathlib
 import gpxpy
 import random
 import os
+import pandas as pd
 
 
 def convert_to_lists(file):
@@ -12,6 +13,7 @@ def convert_to_lists(file):
     height_list = []
     speed_list = []
     hdop_list = []
+    time_list = []
     with open(file) as gpx_file:
 
         gpx = gpxpy.parse(gpx_file)
@@ -25,22 +27,35 @@ def convert_to_lists(file):
                         point.speed
                     ), hdop_list.append(
                         point.horizontal_dilution
+                    ), time_list.append(
+                        point.time
                     )
 
-        return longitude_list, latitude_list, height_list, speed_list, hdop_list
+        dict = {
+            "longitude": longitude_list,
+            "latitude": latitude_list,
+            "height": height_list,
+            "speed": speed_list,
+            "hdop": hdop_list,
+            "time": time_list,
+        }
+
+        df = pd.DataFrame(dict)
+
+        return df
 
 
-def plot_track(longitude_list, latitude_list, hdop_list, alpha_list):
+def plot_track(df):
 
     fig = plt.figure()
     ax = plt.axes(projection=ccrs.Mercator())
 
     ax.scatter(
-        longitude_list,
-        latitude_list,
+        df.longitude,
+        df.latitude,
         transform=ccrs.PlateCarree(),
-        s=hdop_list,
-        alpha=alpha_list,
+        s=df.hdop,
+        alpha=[min(1 / i, 1) for i in df.hdop],
     )
 
     plt.title(f"GPX Tracks")
@@ -48,19 +63,13 @@ def plot_track(longitude_list, latitude_list, hdop_list, alpha_list):
 
 
 def combine_tracks(folder):
-    complete_longitudes = []
-    complete_latitudes = []
-    complete_hdop = []
+    combined_df = pd.DataFrame()
 
     for track_file in pathlib.Path("tracks").iterdir():
         if track_file.is_file():
-            longitude_list, latitude_list, height, speed, hdop = convert_to_lists(
-                track_file
-            )
-            complete_longitudes.extend(longitude_list)
-            complete_latitudes.extend(latitude_list)
-            complete_hdop.extend(hdop)
-    return complete_longitudes, complete_latitudes, complete_hdop
+            track_df = convert_to_lists(track_file)
+        pd.concat([combined_df, track_df]).reset_index().drop("index", axis=1)
+    return combined_df
 
 
 def choose_random_track(folder):
@@ -85,12 +94,11 @@ if __name__ == "__main__":
     gpx_tracks_folder = "tracks"
     # combine_tracks(gpx_tracks_folder)
     # choose_random_track(gpx_tracks_folder)
-    # random_track = choose_random_track(gpx_tracks_folder)
-    # lon, lat, height, speed, hdop = convert_to_lists(random_track)
+    random_track = choose_random_track(gpx_tracks_folder)
+    df_random_track = convert_to_lists(random_track)
 
     # plot_track(lon, lat, hdop)
 
-    lon, lat, hdop = combine_tracks(gpx_tracks_folder)
-    talpha = [min(1 / i, 1) for i in hdop]
+    # df_combined = combine_tracks(gpx_tracks_folder)
 
-    plot_track(lon, lat, hdop, talpha)
+    plot_track(df_random_track)
