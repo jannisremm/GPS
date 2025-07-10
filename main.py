@@ -68,7 +68,9 @@ def combine_tracks(folder):
     for track_file in pathlib.Path("tracks").iterdir():
         if track_file.is_file():
             track_df = convert_to_lists(track_file)
-        pd.concat([combined_df, track_df]).reset_index().drop("index", axis=1)
+        combined_df = (
+            pd.concat([combined_df, track_df]).reset_index().drop("index", axis=1)
+        )
     return combined_df
 
 
@@ -99,6 +101,7 @@ if __name__ == "__main__":
 
     # plot_track(lon, lat, hdop)
 
-    # df_combined = combine_tracks(gpx_tracks_folder)
+    df_combined = combine_tracks(gpx_tracks_folder)
 
     plot_track(df_random_track)
+    plot_track(df_combined)
