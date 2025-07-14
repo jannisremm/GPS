@@ -3,10 +3,12 @@ import pathlib
 import random
 import re
 
+import adjustText as adjust_text
 import cartopy.crs as ccrs
 import gpxpy
 import matplotlib.pyplot as plt
 import pandas as pd
+from matplotlib import colors
 
 
 def parse_gpx_to_dataframe(file) -> pd.DataFrame:
@@ -28,7 +30,7 @@ def parse_gpx_to_dataframe(file) -> pd.DataFrame:
                     if previous_point and point.time and previous_point.time:
                         speed = point.speed_between(previous_point)
                     else:
-                        speed = None
+                        speed = 0.001
 
                     (
                         longitude_list.append(point.longitude),
@@ -57,7 +59,7 @@ def parse_gpx_to_dataframe(file) -> pd.DataFrame:
 def plot_track(df):
     """Takes a dataframe and visualises it with a matplotlib chart"""
 
-    fig = plt.figure()
+    # fig = plt.figure()
     ax = plt.axes(projection=ccrs.Mercator())
 
     ax.scatter(
@@ -117,15 +119,8 @@ if __name__ == "__main__":
     with open(random_gpx_file) as f:
         random_gpx_track = gpxpy.parse(f)
 
-    # plot_track(lon, lat, hdop)
     df_combined = pd.read_csv("combined_gpx_tracks.csv")
-    # df_combined = combine_tracks(gpx_tracks_folder)
-    # df_combined.to_csv("combined_gpx_tracks.csv")
 
-    # plot_track(df_random_track)
-    # plot_track(df_combined)
-
-    ################################################
     for df in (df_random_track, df_combined):
         df["time"] = pd.to_datetime(df["time"], utc=True).dt.tz_convert(None)
 
@@ -134,6 +129,24 @@ if __name__ == "__main__":
         "Length (km)": random_gpx_track.length_3d() / 1000,
         "Duration": max(df_random_track["time"]) - min(df_random_track["time"]),
     }
+    random_gpx_track_top_speed = df_random_track["speed"].idxmax()
+
+    random_gpx_track_top_speed_longitude = df_random_track.at[
+        random_gpx_track_top_speed, "longitude"
+    ]
+    random_gpx_track_top_speed_latitude = df_random_track.at[
+        random_gpx_track_top_speed, "latitude"
+    ]
+
+    random_gpx_track_top_height = df_random_track["height"].idxmax()
+
+    random_gpx_track_top_height_longitude = df_random_track.at[
+        random_gpx_track_top_height, "longitude"
+    ]
+    random_gpx_track_top_height_latitude = df_random_track.at[
+        random_gpx_track_top_height, "latitude"
+    ]
+
     fig = plt.figure()
 
     gs = fig.add_gridspec(2, 2)
@@ -179,11 +192,47 @@ if __name__ == "__main__":
         df_random_track.latitude,
         transform=ccrs.PlateCarree(),
         s=1,
-        color=point_colours,
+        c=df_random_track["speed"],
+        cmap="viridis",
+        norm=colors.LogNorm(
+            df_random_track["speed"].min(), df_random_track["speed"].max()
+        ),
     )
 
     ax2.set_xlabel("Longitude")
     ax2.set_ylabel("Latitude")
+
+    txt_speed = ax2.annotate(
+        "Top Speed",
+        xy=(
+            random_gpx_track_top_speed_longitude,
+            random_gpx_track_top_speed_latitude,
+        ),  # point to the dot
+        xytext=(50, 50),
+        textcoords="offset points",
+        ha="center",
+        arrowprops=dict(arrowstyle="->"),
+        transform=ccrs.PlateCarree(),
+    )
+    txt_high = ax2.annotate(
+        "Highest point",
+        xy=(
+            random_gpx_track_top_height_longitude,
+            random_gpx_track_top_height_latitude,
+        ),
+        xytext=(-50, -50),
+        textcoords="offset points",
+        ha="center",
+        arrowprops=dict(arrowstyle="->"),
+        transform=ccrs.PlateCarree(),
+    )
+
+    adjust_text.adjust_text(
+        [txt_speed, txt_high],
+        ax=ax2,
+        expand_points=(1.2, 1.5),
+        arrowprops=dict(arrowstyle="->"),
+    )
 
     ax3.plot(df_random_track.time, df_random_track.height, c="red", label="Height(m)")
     ax3.plot(df_random_track.time, df_random_track.speed, c="green", label="Speed(m/s)")
