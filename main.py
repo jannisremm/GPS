@@ -1,9 +1,11 @@
-import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
-import pathlib
-import gpxpy
-import random
 import os
+import pathlib
+import random
+import re
+
+import cartopy.crs as ccrs
+import gpxpy
+import matplotlib.pyplot as plt
 import pandas as pd
 
 
@@ -17,21 +19,26 @@ def parse_gpx_to_dataframe(file) -> pd.DataFrame:
     hdop_list = []
     time_list = []
     with open(file) as gpx_file:
-
         gpx = gpxpy.parse(gpx_file)
 
         for track in gpx.tracks:
             for segment in track.segments:
+                previous_point = None
                 for point in segment.points:
-                    longitude_list.append(point.longitude), latitude_list.append(
-                        point.latitude
-                    ), height_list.append(point.elevation), speed_list.append(
-                        point.speed
-                    ), hdop_list.append(
-                        point.horizontal_dilution
-                    ), time_list.append(
-                        point.time
+                    if previous_point and point.time and previous_point.time:
+                        speed = point.speed_between(previous_point)
+                    else:
+                        speed = None
+
+                    (
+                        longitude_list.append(point.longitude),
+                        latitude_list.append(point.latitude),
+                        height_list.append(point.elevation),
+                        speed_list.append(speed),
+                        hdop_list.append(point.horizontal_dilution),
+                        time_list.append(point.time),
                     )
+                    previous_point = point
 
         gpx_dict = {
             "longitude": longitude_list,
@@ -61,7 +68,7 @@ def plot_track(df):
         alpha=[min(1 / i, 1) for i in df.hdop],
     )
 
-    plt.title(f"GPX Tracks")
+    plt.title("GPX Tracks")
     plt.show()
 
 
@@ -93,19 +100,104 @@ def choose_random_track(folder):
     return random_track_full_path
 
 
-# def track_infos(track)
-
-
 if __name__ == "__main__":
     gpx_tracks_folder = "tracks"
     # combine_tracks(gpx_tracks_folder)
     # choose_random_track(gpx_tracks_folder)
-    random_track = choose_random_track(gpx_tracks_folder)
-    df_random_track = parse_gpx_to_dataframe(random_track)
+    random_gpx_file = choose_random_track(gpx_tracks_folder)
+    df_random_track = parse_gpx_to_dataframe(random_gpx_file)
+
+    regex_match = re.search(r"tracks\\(.+)\.gpx", random_gpx_file)
+
+    if regex_match:
+        random_gpx_file_name = regex_match.group(1)
+    else:
+        random_gpx_file_name = "No Filename"
+
+    with open(random_gpx_file) as f:
+        random_gpx_track = gpxpy.parse(f)
 
     # plot_track(lon, lat, hdop)
+    df_combined = pd.read_csv("combined_gpx_tracks.csv")
+    # df_combined = combine_tracks(gpx_tracks_folder)
+    # df_combined.to_csv("combined_gpx_tracks.csv")
 
-    df_combined = combine_tracks(gpx_tracks_folder)
+    # plot_track(df_random_track)
+    # plot_track(df_combined)
 
-    plot_track(df_random_track)
-    plot_track(df_combined)
+    ################################################
+    for df in (df_random_track, df_combined):
+        df["time"] = pd.to_datetime(df["time"], utc=True).dt.tz_convert(None)
+
+    stats = {
+        "Max Speed": df_random_track["speed"].max(),
+        "Length (km)": random_gpx_track.length_3d() / 1000,
+        "Duration": max(df_random_track["time"]) - min(df_random_track["time"]),
+    }
+    fig = plt.figure()
+
+    gs = fig.add_gridspec(2, 2)
+
+    ax1 = fig.add_subplot(gs[0, 0], projection=ccrs.Mercator())
+    ax2 = fig.add_subplot(gs[0, 1], projection=ccrs.Mercator())
+    ax3 = fig.add_subplot(gs[1, :])
+
+    for ax in (ax1, ax2):
+        gl = ax.gridlines(
+            draw_labels=True, crs=ccrs.PlateCarree(), linestyle="--", alpha=0.4
+        )
+        gl.top_labels = False
+        gl.right_labels = False
+
+    fig.suptitle("GPS AND STUFF")
+
+    ax1.set_title("Combined GPS tracks")
+    ax1.scatter(
+        df_combined.longitude,
+        df_combined.latitude,
+        s=df_combined.hdop,
+        alpha=[min(1 / i, 1) for i in df_combined.hdop],
+        transform=ccrs.PlateCarree(),
+    )
+    ax1.plot(
+        df_random_track.longitude,
+        df_random_track.latitude,
+        color="red",
+        transform=ccrs.PlateCarree(),
+    )
+
+    ax1.set_xlabel("Longitude")
+    ax1.set_ylabel("Latitude")
+
+    ax2.set_title(random_gpx_file_name)
+    cmap = plt.get_cmap("inferno")
+    norm = plt.Normalize(df_random_track.speed.min(), df_random_track.speed.max())
+    point_colours = cmap(norm(df_random_track.speed))
+
+    ax2.scatter(
+        df_random_track.longitude,
+        df_random_track.latitude,
+        transform=ccrs.PlateCarree(),
+        s=1,
+        color=point_colours,
+    )
+
+    ax2.set_xlabel("Longitude")
+    ax2.set_ylabel("Latitude")
+
+    ax3.plot(df_random_track.time, df_random_track.height, c="red", label="Height(m)")
+    ax3.plot(df_random_track.time, df_random_track.speed, c="green", label="Speed(m/s)")
+    ax3.plot(
+        df_random_track.time,
+        df_random_track.hdop,
+        c="blue",
+        label="GPS h/v dop",
+        linestyle="dotted",
+    )
+
+    ax3.legend(
+        loc="best", frameon=True, fancybox=True, framealpha=0.9, title="Measurements"
+    )
+
+    ax3.set_xlabel("Time")
+    plt.show()
