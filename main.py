@@ -3,7 +3,6 @@ import pathlib
 import random
 import re
 
-import adjustText as adjust_text
 import cartopy.crs as ccrs
 import gpxpy
 import matplotlib.pyplot as plt
@@ -147,7 +146,7 @@ if __name__ == "__main__":
         random_gpx_track_top_height, "latitude"
     ]
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(16, 8))
 
     gs = fig.add_gridspec(2, 2)
 
@@ -202,36 +201,28 @@ if __name__ == "__main__":
     ax2.set_xlabel("Longitude")
     ax2.set_ylabel("Latitude")
 
-    txt_speed = ax2.annotate(
-        "Top Speed",
-        xy=(
-            random_gpx_track_top_speed_longitude,
-            random_gpx_track_top_speed_latitude,
-        ),  # point to the dot
-        xytext=(50, 50),
+    ax2.annotate(
+        "Top speed",
+        xy=(random_gpx_track_top_speed_longitude, random_gpx_track_top_speed_latitude),
+        xycoords=ccrs.PlateCarree(),
+        xytext=(20, 20),
         textcoords="offset points",
-        ha="center",
-        arrowprops=dict(arrowstyle="->"),
-        transform=ccrs.PlateCarree(),
+        arrowprops=dict(arrowstyle="->", color="red", lw=1),
+        fontsize=12,
+        color="red",
     )
-    txt_high = ax2.annotate(
-        "Highest point",
+    ax2.annotate(
+        "Highest Point",
         xy=(
             random_gpx_track_top_height_longitude,
             random_gpx_track_top_height_latitude,
         ),
-        xytext=(-50, -50),
+        xycoords=ccrs.PlateCarree(),
+        xytext=(-20, -20),
         textcoords="offset points",
-        ha="center",
-        arrowprops=dict(arrowstyle="->"),
-        transform=ccrs.PlateCarree(),
-    )
-
-    adjust_text.adjust_text(
-        [txt_speed, txt_high],
-        ax=ax2,
-        expand_points=(1.2, 1.5),
-        arrowprops=dict(arrowstyle="->"),
+        arrowprops=dict(arrowstyle="->", color="red", lw=1),
+        fontsize=12,
+        color="red",
     )
 
     ax3.plot(df_random_track.time, df_random_track.height, c="red", label="Height(m)")
