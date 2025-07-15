@@ -120,6 +120,9 @@ if __name__ == "__main__":
 
     df_combined = pd.read_csv("combined_gpx_tracks.csv")
 
+    # df_combined = combine_tracks(gpx_tracks_folder)
+    # df_combined.to_csv("combined_gpx_tracks.csv")
+
     for df in (df_random_track, df_combined):
         df["time"] = pd.to_datetime(df["time"], utc=True).dt.tz_convert(None)
 
@@ -146,13 +149,21 @@ if __name__ == "__main__":
         random_gpx_track_top_height, "latitude"
     ]
 
-    fig = plt.figure(figsize=(16, 8))
+    fig = plt.figure(figsize=(12, 8))
 
-    gs = fig.add_gridspec(2, 2)
+    gs = fig.add_gridspec(2, 3)
 
+    ax0 = fig.add_subplot(gs[0, 2])
     ax1 = fig.add_subplot(gs[0, 0], projection=ccrs.Mercator())
     ax2 = fig.add_subplot(gs[0, 1], projection=ccrs.Mercator())
     ax3 = fig.add_subplot(gs[1, :])
+
+    fig.suptitle("GPS AND STUFF")
+
+    ax0.set_title("Speed Histogram")
+    ax0.set_xlabel("Meters per Second")
+
+    df_random_track["speed"].hist(ax=ax0, bins=50)
 
     for ax in (ax1, ax2):
         gl = ax.gridlines(
@@ -160,8 +171,6 @@ if __name__ == "__main__":
         )
         gl.top_labels = False
         gl.right_labels = False
-
-    fig.suptitle("GPS AND STUFF")
 
     ax1.set_title("Combined GPS tracks")
     ax1.scatter(
