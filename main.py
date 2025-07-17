@@ -119,10 +119,13 @@ if __name__ == "__main__":
     with open(random_gpx_file) as f:
         random_gpx_track = gpxpy.parse(f)
 
-    df_combined = pd.read_csv("combined_gpx_tracks.csv")
+    csv_path = "combined_gpx_tracks.csv"
 
-    # df_combined = combine_tracks(gpx_tracks_folder)
-    # df_combined.to_csv("combined_gpx_tracks.csv")
+    if os.path.isfile(csv_path):
+        df_combined = pd.read_csv(csv_path)
+    else:
+        df_combined = combine_tracks(gpx_tracks_folder)
+        df_combined.to_csv(csv_path)
 
     for df in (df_random_track, df_combined):
         df["time"] = pd.to_datetime(df["time"], utc=True).dt.tz_convert(None)
