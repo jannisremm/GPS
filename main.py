@@ -27,7 +27,7 @@ def parse_gpx_to_dataframe(file) -> pd.DataFrame:
                 previous_point = None
                 for point in segment.points:
                     if previous_point and point.time and previous_point.time:
-                        speed = point.speed_between(previous_point)
+                        speed = max(point.speed_between(previous_point), 0.001)
                     else:
                         speed = 0.001
 
@@ -106,6 +106,7 @@ if __name__ == "__main__":
     # combine_tracks(gpx_tracks_folder)
     # choose_random_track(gpx_tracks_folder)
     random_gpx_file = choose_random_track(gpx_tracks_folder)
+    print(random_gpx_file)
     df_random_track = parse_gpx_to_dataframe(random_gpx_file)
 
     regex_match = re.search(r"tracks\\(.+)\.gpx", random_gpx_file)
@@ -164,6 +165,16 @@ if __name__ == "__main__":
     ax0.set_xlabel("Meters per Second")
 
     df_random_track["speed"].hist(ax=ax0, bins=50)
+
+    # ax0.scatter(df_combined["time"].dt.time, df_combined.speed)
+    # ax0.scatter(
+    #     (df_combined["time"].apply(lambda x: x.replace(year=2000, month=1, day=1))),
+    #     df_combined["speed"],
+    # )
+
+    # ax0.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # one tick per hour
+    # ax0.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))  # show HH:MM only
+    # ax0.set_xlabel("Time of day (local)")
 
     for ax in (ax1, ax2):
         gl = ax.gridlines(
