@@ -1,5 +1,6 @@
 *.gpx
 tracks/
+Results/
 test.py
 ruff.toml
 combined_gpx_tracks.csv

@@ -2,6 +2,7 @@ import os
 import pathlib
 import random
 import re
+from datetime import datetime
 
 import cartopy.crs as ccrs
 import gpxpy
@@ -106,7 +107,6 @@ if __name__ == "__main__":
     # combine_tracks(gpx_tracks_folder)
     # choose_random_track(gpx_tracks_folder)
     random_gpx_file = choose_random_track(gpx_tracks_folder)
-    print(random_gpx_file)
     df_random_track = parse_gpx_to_dataframe(random_gpx_file)
 
     regex_match = re.search(r"tracks\\(.+)\.gpx", random_gpx_file)
@@ -150,7 +150,7 @@ if __name__ == "__main__":
         random_gpx_track_top_height, "latitude"
     ]
 
-    fig = plt.figure(figsize=(12, 8))
+    fig = plt.figure(figsize=(16, 9))
 
     gs = fig.add_gridspec(2, 3)
 
@@ -159,22 +159,12 @@ if __name__ == "__main__":
     ax2 = fig.add_subplot(gs[0, 1], projection=ccrs.Mercator())
     ax3 = fig.add_subplot(gs[1, :])
 
-    fig.suptitle("GPS AND STUFF")
+    fig.suptitle("GPS tracks overview")
 
     ax0.set_title("Speed Histogram")
     ax0.set_xlabel("Meters per Second")
 
     df_random_track["speed"].hist(ax=ax0, bins=50)
-
-    # ax0.scatter(df_combined["time"].dt.time, df_combined.speed)
-    # ax0.scatter(
-    #     (df_combined["time"].apply(lambda x: x.replace(year=2000, month=1, day=1))),
-    #     df_combined["speed"],
-    # )
-
-    # ax0.xaxis.set_major_locator(mdates.HourLocator(interval=1))  # one tick per hour
-    # ax0.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))  # show HH:MM only
-    # ax0.set_xlabel("Time of day (local)")
 
     for ax in (ax1, ax2):
         gl = ax.gridlines(
@@ -212,7 +202,7 @@ if __name__ == "__main__":
         transform=ccrs.PlateCarree(),
         s=1,
         c=df_random_track["speed"],
-        cmap="viridis",
+        cmap="turbo",
         norm=colors.LogNorm(
             df_random_track["speed"].min(), df_random_track["speed"].max()
         ),
@@ -238,7 +228,7 @@ if __name__ == "__main__":
             random_gpx_track_top_height_latitude,
         ),
         xycoords=ccrs.PlateCarree(),
-        xytext=(-20, -20),
+        xytext=(20, 20),
         textcoords="offset points",
         arrowprops=dict(arrowstyle="->", color="red", lw=1),
         fontsize=12,
@@ -260,4 +250,12 @@ if __name__ == "__main__":
     )
 
     ax3.set_xlabel("Time")
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    results_dir = os.path.join(script_dir, "Results")
+    file_name = datetime.now().strftime("%Y-%m-%d - %H-%M-%S") + ".png"
+    if not os.path.isdir(results_dir):
+        os.makedirs(results_dir)
+    file_path = os.path.join(results_dir, file_name)
+    plt.savefig(file_path)
     plt.show()
