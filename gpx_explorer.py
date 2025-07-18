@@ -2,6 +2,7 @@ import os
 import pathlib
 import random
 import re
+import sys
 from datetime import datetime
 
 import cartopy.crs as ccrs
@@ -104,6 +105,10 @@ def choose_random_track(folder):
 
 if __name__ == "__main__":
     gpx_tracks_folder = "tracks"
+
+    if not os.path.isfile(gpx_tracks_folder):
+        sys.exit("Tracks folder not found!")
+
     # combine_tracks(gpx_tracks_folder)
     # choose_random_track(gpx_tracks_folder)
     random_gpx_file = choose_random_track(gpx_tracks_folder)
