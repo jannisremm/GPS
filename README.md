@@ -12,7 +12,7 @@ The result:
 
 *  **Converts GPX to a DataFrame** (`longitude`, `latitude`, `height`, `speed`, `hdop`, `time`).
 *  **Merges dozens of tracks** into one CSV for aggregate analysis.
-*  **Picks a random track** highlights one journey on the map and shows details in the other plots.
+*  **Picks a random track** to highlight one journey on the map and show its details in the other plots.
 *  **Visualise speed, altitude & GPS accuracy** in a single Matplotlib figure.
 
 ---
@@ -29,7 +29,7 @@ The result:
 
 ```bash
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt                      # or see minimal deps below
+pip install -r requirements.txt
 ```
 
 ### Minimal requirements
@@ -48,9 +48,6 @@ pip install pandas matplotlib cartopy gpxpy
 # 1. Put your .gpx files into the tracks/ directory
 # 2. Run this command in the terminal from the main directory
 python gpx_explorer.py
-
-# Optional: combine all tracks into a CSV cache
-python gpx_explorer.py --combine --out combined_gpx_tracks.csv
 ```
 
 ---
@@ -62,6 +59,8 @@ python gpx_explorer.py --combine --out combined_gpx_tracks.csv
     * Make sure annotations stay within borders of graph, and don't overlap points or each other
     * Add Values to Top Speed and Max Height annotations
     * Make sure gridlines have regular equal intervals
+    * Add legend for speed colours in individual view
+    * Change combined view to heatmap
 * Identify stops on the individual graph
 * Turn the script into a CLI:
     * Add options for how many stats to show
@@ -70,5 +69,4 @@ python gpx_explorer.py --combine --out combined_gpx_tracks.csv
 * Use information from stops to cluster tracks 
 * Create Unit tests
 * Package & publish on PyPI (maybe)
-
 ---
