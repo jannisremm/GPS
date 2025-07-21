@@ -46,9 +46,13 @@ def plot_overview(
 
     gs = fig.add_gridspec(2, 3)
 
+    # Single track histogram
     ax0 = fig.add_subplot(gs[0, 2])
+    # Combined tracks overview
     ax1 = fig.add_subplot(gs[0, 0], projection=ccrs.Mercator())
+    # Single track detail view
     ax2 = fig.add_subplot(gs[0, 1], projection=ccrs.Mercator())
+    # Single track speed/height/hdop vs time
     ax3 = fig.add_subplot(gs[1, :])
 
     fig.suptitle("GPS tracks overview")
@@ -84,9 +88,6 @@ def plot_overview(
     ax1.set_ylabel("Latitude")
 
     ax2.set_title("randomly selected track")
-    # cmap = plt.get_cmap("inferno")
-    # norm = plt.Normalize(df_single_track.speed.min(), df_single_track.speed.max())
-    # point_colours = cmap(norm(df_single_track.speed))
 
     ax2.scatter(
         df_single_track.longitude,
