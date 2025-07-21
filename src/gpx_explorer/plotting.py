@@ -1,0 +1,161 @@
+from __future__ import annotations
+
+import os
+from datetime import datetime
+from pathlib import Path
+
+import cartopy.crs as ccrs
+import gpxpy
+import matplotlib.pyplot as plt
+import pandas as pd
+from matplotlib import colors
+
+from .core import (
+    get_track_extremes,
+)
+
+__all__ = ["plot_track", "plot_overview"]
+
+
+def plot_track(df: pd.DataFrame) -> None:
+    """Takes a dataframe and visualises it with a matplotlib chart"""
+
+    # fig = plt.figure()
+    ax = plt.axes(projection=ccrs.Mercator())
+
+    ax.scatter(
+        df.longitude,
+        df.latitude,
+        transform=ccrs.PlateCarree(),
+        s=df.hdop,
+        alpha=[min(1 / i, 1) for i in df.hdop],
+    )
+
+    plt.title("GPX Tracks")
+    plt.show()
+
+
+def plot_overview(
+    df_single_track: pd.DataFrame,
+    df_all_tracks: pd.DataFrame,
+    gpx_obj: gpxpy.gpx.GPX,
+    outfile_dir: Path | str = "Results",
+) -> Path:
+    """creates an overview plot from df_all_tracks, and detail views from df_single_track"""
+    fig = plt.figure(figsize=(16, 9))
+
+    gs = fig.add_gridspec(2, 3)
+
+    ax0 = fig.add_subplot(gs[0, 2])
+    ax1 = fig.add_subplot(gs[0, 0], projection=ccrs.Mercator())
+    ax2 = fig.add_subplot(gs[0, 1], projection=ccrs.Mercator())
+    ax3 = fig.add_subplot(gs[1, :])
+
+    fig.suptitle("GPS tracks overview")
+
+    ax0.set_title("Speed Histogram")
+    ax0.set_xlabel("Meters per Second")
+
+    df_single_track["speed"].hist(ax=ax0, bins=50)
+
+    for ax in (ax1, ax2):
+        gl = ax.gridlines(
+            draw_labels=True, crs=ccrs.PlateCarree(), linestyle="--", alpha=0.4
+        )
+        gl.top_labels = False
+        gl.right_labels = False
+
+    ax1.set_title("Combined GPS tracks")
+    ax1.scatter(
+        df_all_tracks.longitude,
+        df_all_tracks.latitude,
+        s=df_all_tracks.hdop,
+        alpha=[min(1 / i, 1) for i in df_all_tracks.hdop],
+        transform=ccrs.PlateCarree(),
+    )
+    ax1.plot(
+        df_single_track.longitude,
+        df_single_track.latitude,
+        color="red",
+        transform=ccrs.PlateCarree(),
+    )
+
+    ax1.set_xlabel("Longitude")
+    ax1.set_ylabel("Latitude")
+
+    ax2.set_title("randomly selected track")
+    # cmap = plt.get_cmap("inferno")
+    # norm = plt.Normalize(df_single_track.speed.min(), df_single_track.speed.max())
+    # point_colours = cmap(norm(df_single_track.speed))
+
+    ax2.scatter(
+        df_single_track.longitude,
+        df_single_track.latitude,
+        transform=ccrs.PlateCarree(),
+        s=1,
+        c=df_single_track["speed"],
+        cmap="turbo",
+        norm=colors.LogNorm(
+            df_single_track["speed"].min(), df_single_track["speed"].max()
+        ),
+    )
+
+    ax2.set_xlabel("Longitude")
+    ax2.set_ylabel("Latitude")
+
+    speed_idx, height_idx = get_track_extremes(df_single_track)
+
+    single_track_top_speed_longitude = df_single_track.at[speed_idx, "longitude"]
+    single_track_top_speed_latitude = df_single_track.at[speed_idx, "latitude"]
+    single_track_top_height_longitude = df_single_track.at[height_idx, "longitude"]
+    single_track_top_height_latitude = df_single_track.at[height_idx, "latitude"]
+
+    ax2.annotate(
+        "Top speed",
+        xy=(single_track_top_speed_longitude, single_track_top_speed_latitude),
+        xycoords=ccrs.PlateCarree(),
+        xytext=(20, 20),
+        textcoords="offset points",
+        arrowprops=dict(arrowstyle="->", color="red", lw=1),
+        fontsize=12,
+        color="red",
+    )
+    ax2.annotate(
+        "Highest Point",
+        xy=(
+            single_track_top_height_longitude,
+            single_track_top_height_latitude,
+        ),
+        xycoords=ccrs.PlateCarree(),
+        xytext=(20, 20),
+        textcoords="offset points",
+        arrowprops=dict(arrowstyle="->", color="red", lw=1),
+        fontsize=12,
+        color="red",
+    )
+
+    ax3.plot(df_single_track.time, df_single_track.height, c="red", label="Height(m)")
+    ax3.plot(df_single_track.time, df_single_track.speed, c="green", label="Speed(m/s)")
+    ax3.plot(
+        df_single_track.time,
+        df_single_track.hdop,
+        c="blue",
+        label="GPS h/v dop",
+        linestyle="dotted",
+    )
+
+    ax3.legend(
+        loc="best", frameon=True, fancybox=True, framealpha=0.9, title="Measurements"
+    )
+
+    ax3.set_xlabel("Time")
+
+    results_dir = Path(outfile_dir).expanduser().resolve()
+    file_name = datetime.now().strftime("%Y-%m-%d - %H-%M-%S") + ".png"
+    if not os.path.isdir(results_dir):
+        os.makedirs(results_dir)
+    file_path = os.path.join(results_dir, file_name)
+    plt.savefig(file_path)
+    plt.show()
+
+    return file_path

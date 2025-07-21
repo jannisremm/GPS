@@ -1,0 +1,51 @@
+[tool.poetry]
+name        = "gpx-explorer"
+version     = "0.0.1"
+description = "Visualise and Analyse GPX files"
+authors     = ["jannisremm <128300711+jannisremm@users.noreply.github.com>"]
+
+packages = [
+  { include = "gpx_explorer", from = "src" }
+]
+
+[tool.poetry.dependencies]
+python     = ">=3.11,<4.0"
+matplotlib = "^3.10.3"
+cartopy    = "^0.24.1"
+gpxpy      = "^1.6.2"
+pandas     = "^2.3.1"
+
+[tool.poetry.scripts]
+gpx-explorer = "gpx_explorer.cli:main"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.17.0"
+pytest = "^8.4.1"
+pytest-cov = "^6.2.1"
+commitizen = {extras = ["poetry"], version = "^4.8.3"}
+
+
+[tool.mypy]
+python_version        = "3.12"
+strict                = true       # turn on 20‑ish useful extra checks
+ignore_missing_imports = true       # silence cartopy, gpxpy until stubs exist
+plugins               = []
+
+[tool.pytest.ini_options]
+addopts = "-ra -q --cov=gpx_explorer --cov-report=term-missing"
+testpaths = ["tests"]
+
+
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version_scheme = "pep440"
+version_provider = "poetry"
+update_changelog_on_bump = true
+major_version_zero = true
+[build-system]
+requires      = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+

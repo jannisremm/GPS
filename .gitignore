@@ -1,6 +1,7 @@
 *.gpx
 tracks/
 Results/
+src/gpx_explorer/__pycache__
 test.py
 ruff.toml
 combined_gpx_tracks.csv
