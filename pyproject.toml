@@ -1,6 +1,6 @@
 [tool.poetry]
 name        = "gpx-explorer"
-version     = "0.0.1"
+version     = "0.1.0"
 description = "Visualise and Analyse GPX files"
 authors     = ["jannisremm <128300711+jannisremm@users.noreply.github.com>"]
 
@@ -14,6 +14,7 @@ matplotlib = "^3.10.3"
 cartopy    = "^0.24.1"
 gpxpy      = "^1.6.2"
 pandas     = "^2.3.1"
+dtw-python = "^1.5.3"
 
 [tool.poetry.scripts]
 gpx-explorer = "gpx_explorer.cli:main"
@@ -26,10 +27,10 @@ commitizen = {extras = ["poetry"], version = "^4.8.3"}
 
 
 [tool.mypy]
-python_version        = "3.12"
-strict                = true       # turn on 20‑ish useful extra checks
-ignore_missing_imports = true       # silence cartopy, gpxpy until stubs exist
-plugins               = []
+python_version = "3.1"
+strict = true
+ignore_missing_imports = true
+plugins = []
 
 [tool.pytest.ini_options]
 addopts = "-ra -q --cov=gpx_explorer --cov-report=term-missing"
