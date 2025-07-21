@@ -86,6 +86,9 @@ def choose_random_track(folder: str | Path) -> Path:
             if f.endswith(".gpx"):
                 file_list.append(f)
 
+    if not file_list:
+        raise FileNotFoundError(f"No GPX files found in {folder}")
+
     random_track = random.choice(file_list)
 
     return Path(folder) / random_track
