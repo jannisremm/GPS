@@ -21,12 +21,6 @@ __all__ = [
 def parse_gpx_to_dataframe(file: str | pathlib.Path) -> pd.DataFrame:
     """Takes a gpx file and uses gpxpy to transform it into a pandas dataframe"""
 
-    longitude_list: list[float] = []
-    latitude_list: list[float] = []
-    height_list: list[float | None] = []
-    speed_list: list[float] = []
-    hdop_list: list[float | None] = []
-    time_list: list[pd.Timestamp] = []
     gpx_list: list[dict[str, object]] = []
 
     with open(file) as gpx_file:
