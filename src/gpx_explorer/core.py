@@ -21,12 +21,14 @@ __all__ = [
 def parse_gpx_to_dataframe(file: str | pathlib.Path) -> pd.DataFrame:
     """Takes a gpx file and uses gpxpy to transform it into a pandas dataframe"""
 
-    longitude_list = []
-    latitude_list = []
-    height_list = []
-    speed_list = []
-    hdop_list = []
-    time_list = []
+    longitude_list: list[float] = []
+    latitude_list: list[float] = []
+    height_list: list[float | None] = []
+    speed_list: list[float] = []
+    hdop_list: list[float | None] = []
+    time_list: list[pd.Timestamp] = []
+    gpx_list: list[dict[str, object]] = []
+
     with open(file) as gpx_file:
         gpx = gpxpy.parse(gpx_file)
 
@@ -43,26 +45,20 @@ def parse_gpx_to_dataframe(file: str | pathlib.Path) -> pd.DataFrame:
                     else:
                         speed = 0.001
 
-                    (
-                        longitude_list.append(point.longitude),
-                        latitude_list.append(point.latitude),
-                        height_list.append(point.elevation),
-                        speed_list.append(speed),
-                        hdop_list.append(point.horizontal_dilution),
-                        time_list.append(pd.to_datetime(str(point.time), utc=True)),
+                    gpx_list.append(
+                        {
+                            "longitude": point.longitude,
+                            "latitude": point.latitude,
+                            "height": point.elevation,
+                            "speed": speed,
+                            "hdop": point.horizontal_dilution,
+                            "time": pd.to_datetime(str(point.time), utc=True),
+                        }
                     )
+
                     previous_point = point
 
-        gpx_dict = {
-            "longitude": longitude_list,
-            "latitude": latitude_list,
-            "height": height_list,
-            "speed": speed_list,
-            "hdop": hdop_list,
-            "time": time_list,
-        }
-
-        df = pd.DataFrame(gpx_dict)
+        df = pd.DataFrame(gpx_list)
 
         return df
 
