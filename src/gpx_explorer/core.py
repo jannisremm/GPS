@@ -35,7 +35,11 @@ def parse_gpx_to_dataframe(file: str | pathlib.Path) -> pd.DataFrame:
                 previous_point = None
                 for point in segment.points:
                     if previous_point and point.time and previous_point.time:
-                        speed = max(point.speed_between(previous_point), 0.001)
+                        raw_speed = point.speed_between(previous_point)
+                        if raw_speed is None:
+                            speed = 0.001
+                        else:
+                            speed = max(raw_speed, 0.001)
                     else:
                         speed = 0.001
 
@@ -85,9 +89,6 @@ def choose_random_track(folder: str | Path) -> Path:
         if os.path.isfile(full_path):
             if f.endswith(".gpx"):
                 file_list.append(f)
-
-    if not file_list:
-        raise FileNotFoundError(f"No GPX files found in {folder}")
 
     random_track = random.choice(file_list)
 
