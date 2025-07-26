@@ -8,7 +8,6 @@ import cartopy.crs as ccrs
 import gpxpy
 import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib import colors
 
 from .core import (
     get_track_extremes,
@@ -89,16 +88,16 @@ def plot_overview(
 
     ax2.set_title("randomly selected track")
 
-    ax2.scatter(
+    speed_chart = ax2.scatter(
         df_single_track.longitude,
         df_single_track.latitude,
         transform=ccrs.PlateCarree(),
         s=1,
         c=df_single_track["speed"],
         cmap="turbo",
-        norm=colors.LogNorm(
-            df_single_track["speed"].min(), df_single_track["speed"].max()
-        ),
+        # norm=colors.LogNorm(
+        #     df_single_track["speed"].min(), df_single_track["speed"].max()
+        # ),
     )
 
     ax2.set_xlabel("Longitude")
@@ -133,6 +132,15 @@ def plot_overview(
         arrowprops=dict(arrowstyle="->", color="red", lw=1),
         fontsize=12,
         color="red",
+    )
+
+    fig.colorbar(
+        speed_chart,
+        ax=ax2,
+        label="Speed (m/s)",
+        location="bottom",
+        shrink=0.7,
+        # norm=colors.Normalize(vmin=0, vmax=df_single_track["speed"].max()),
     )
 
     ax3.plot(df_single_track.time, df_single_track.height, c="red", label="Height(m)")
