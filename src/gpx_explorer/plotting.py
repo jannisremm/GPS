@@ -69,6 +69,23 @@ def plot_overview(
         gl.right_labels = False
 
     ax1.set_title("Combined GPS tracks")
+
+    # Unfinished implementation of map extents auto-adjustment
+    # all_tracks_longitude_stddev = df_all_tracks["longitude"].std() * 0.5
+    # all_tracks_longitude_mean = df_all_tracks["longitude"].mean()
+    # all_tracks_latitude_stddev = df_all_tracks["latitude"].std() * 0.5
+    # all_tracks_latitude_mean = df_all_tracks["latitude"].mean()
+
+    # ax1.set_extent(
+    #     (
+    #         (all_tracks_longitude_mean - all_tracks_longitude_stddev),
+    #         (all_tracks_longitude_mean + all_tracks_longitude_stddev),
+    #         (all_tracks_latitude_mean - all_tracks_latitude_stddev),
+    #         (all_tracks_latitude_mean + all_tracks_latitude_stddev),
+    #     ),
+    #     crs=ccrs.PlateCarree(),
+    # )
+
     ax1.scatter(
         df_all_tracks.longitude,
         df_all_tracks.latitude,
