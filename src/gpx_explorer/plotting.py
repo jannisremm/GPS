@@ -128,7 +128,7 @@ def plot_overview(
     single_track_top_height_latitude = df_single_track.at[height_idx, "latitude"]
 
     ax2.annotate(
-        "Top speed",
+        f"Top speed {df_single_track['speed'].max():.1f} km/h",
         xy=(single_track_top_speed_longitude, single_track_top_speed_latitude),
         xycoords=ccrs.PlateCarree(),
         xytext=(20, 20),
@@ -138,7 +138,7 @@ def plot_overview(
         color="red",
     )
     ax2.annotate(
-        "Highest Point",
+        f"Highest Point {df_single_track['height'].max():.1f} m",
         xy=(
             single_track_top_height_longitude,
             single_track_top_height_latitude,
