@@ -57,7 +57,7 @@ def plot_overview(
     fig.suptitle("GPS tracks overview")
 
     ax0.set_title("Speed Histogram")
-    ax0.set_xlabel("Meters per Second")
+    ax0.set_xlabel("Kilometers per Hour")
 
     df_single_track["speed"].hist(ax=ax0, bins=50)
 
@@ -154,7 +154,7 @@ def plot_overview(
     fig.colorbar(
         speed_chart,
         ax=ax2,
-        label="Speed (m/s)",
+        label="Speed (km/h)",
         location="bottom",
         shrink=0.7,
         # norm=colors.Normalize(vmin=0, vmax=df_single_track["speed"].max()),

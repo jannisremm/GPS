@@ -44,7 +44,7 @@ def parse_gpx_to_dataframe(file: str | pathlib.Path) -> pd.DataFrame:
                             "longitude": point.longitude,
                             "latitude": point.latitude,
                             "height": point.elevation,
-                            "speed": speed,
+                            "speed": speed * 3.6,
                             "hdop": point.horizontal_dilution,
                             "time": pd.to_datetime(str(point.time), utc=True),
                         }
