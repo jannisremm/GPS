@@ -86,6 +86,8 @@ def plot_overview(
     #     crs=ccrs.PlateCarree(),
     # )
 
+    ax1.set_extent((9.85, 10.15, 53.5, 53.65))
+
     ax1.scatter(
         df_all_tracks.longitude,
         df_all_tracks.latitude,
