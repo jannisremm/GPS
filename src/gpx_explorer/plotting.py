@@ -206,6 +206,15 @@ def plot_overview(
 
     ax3.set_xlabel("Time")
 
+    ax4.plot(
+        df_single_track.distance, df_single_track.speed, c="green", label="Speed(km/s)"
+    )
+    ax4.plot(
+        df_single_track.distance, df_single_track.height, c="red", label="Height(m)"
+    )
+
+    ax4.set_xlabel("Distance (km)")
+
     results_dir = Path(outfile_dir).expanduser().resolve()
     file_name = datetime.now().strftime("%Y-%m-%d - %H-%M-%S") + ".png"
     if not os.path.isdir(results_dir):
