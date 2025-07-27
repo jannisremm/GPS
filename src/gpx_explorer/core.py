@@ -29,6 +29,7 @@ def parse_gpx_to_dataframe(file: str | pathlib.Path) -> pd.DataFrame:
         for track in gpx.tracks:
             for segment in track.segments:
                 previous_point = None
+                cumulative_distance = 0.0
                 for point in segment.points:
                     if previous_point and point.time and previous_point.time:
                         raw_speed = point.speed_between(previous_point)
@@ -39,14 +40,19 @@ def parse_gpx_to_dataframe(file: str | pathlib.Path) -> pd.DataFrame:
                     else:
                         speed = 0.001
 
+                    if previous_point is not None:
+                        segment_distance = previous_point.distance_3d(point)
+                        cumulative_distance += segment_distance
+
                     gpx_list.append(
                         {
+                            "time": pd.to_datetime(str(point.time), utc=True),
                             "longitude": point.longitude,
                             "latitude": point.latitude,
                             "height": point.elevation,
                             "speed": speed * 3.6,
+                            "distance": cumulative_distance / 1000,
                             "hdop": point.horizontal_dilution,
-                            "time": pd.to_datetime(str(point.time), utc=True),
                         }
                     )
 
