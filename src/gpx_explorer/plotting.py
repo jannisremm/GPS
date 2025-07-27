@@ -189,7 +189,9 @@ def plot_overview(
     )
 
     ax3.plot(df_single_track.time, df_single_track.height, c="red", label="Height(m)")
-    ax3.plot(df_single_track.time, df_single_track.speed, c="green", label="Speed(m/s)")
+    ax3.plot(
+        df_single_track.time, df_single_track.speed, c="green", label="Speed(km/h)"
+    )
     ax3.plot(
         df_single_track.time,
         df_single_track.hdop,
