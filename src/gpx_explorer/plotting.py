@@ -91,22 +91,6 @@ def plot_overview(
 
     ax1.set_title("Combined GPS tracks")
 
-    # Unfinished implementation of map extents auto-adjustment
-    # all_tracks_longitude_stddev = df_all_tracks["longitude"].std() * 0.5
-    # all_tracks_longitude_mean = df_all_tracks["longitude"].mean()
-    # all_tracks_latitude_stddev = df_all_tracks["latitude"].std() * 0.5
-    # all_tracks_latitude_mean = df_all_tracks["latitude"].mean()
-
-    # ax1.set_extent(
-    #     (
-    #         (all_tracks_longitude_mean - all_tracks_longitude_stddev),
-    #         (all_tracks_longitude_mean + all_tracks_longitude_stddev),
-    #         (all_tracks_latitude_mean - all_tracks_latitude_stddev),
-    #         (all_tracks_latitude_mean + all_tracks_latitude_stddev),
-    #     ),
-    #     crs=ccrs.PlateCarree(),
-    # )
-
     ax1.set_extent((9.85, 10.15, 53.5, 53.65))
 
     ax1.scatter(
@@ -182,15 +166,6 @@ def plot_overview(
         arrowprops=dict(arrowstyle="->", color="red", lw=1),
         fontsize=10,
         color="red",
-    )
-
-    fig.colorbar(
-        speed_chart,
-        ax=ax2,
-        label="Speed (km/h)",
-        location="bottom",
-        shrink=0.7,
-        # norm=colors.Normalize(vmin=0, vmax=df_single_track["speed"].max()),
     )
 
     ax3.plot(df_single_track.time, df_single_track.height, c="red", label="Height(m)")
