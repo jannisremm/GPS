@@ -61,7 +61,23 @@ def plot_overview(
     ax0.set_title("Speed Histogram")
     ax0.set_xlabel("Kilometers per Hour")
 
-    df_single_track["speed"].hist(ax=ax0, bins=50)
+    df_single_track["speed"].hist(ax=ax0, bins=50, log=True)
+
+    ax0.set_yscale("log")
+    ax0.set_ylim(0, None) # Shows a warning  in the console, but otherwise values of 1 wouldn't show
+
+    ax0.yaxis.set_major_locator(mticker.LogLocator(base=10))
+    ax0.yaxis.set_minor_locator(
+        mticker.LogLocator(base=10, subs=(1, 2, 3, 4, 5, 6, 7, 8, 9))
+    )
+
+    ax0.yaxis.set_major_formatter(
+        mticker.FuncFormatter(lambda y, _: "{:.16g}".format(y))
+    )
+
+    ax0.yaxis.set_minor_formatter(mticker.NullFormatter())
+
+    ax0.set_ylabel("Count (log scale)")
 
     for ax in (ax1, ax2):
         gl = ax.gridlines(
