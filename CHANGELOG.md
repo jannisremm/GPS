@@ -1,3 +1,30 @@
+## 0.2.0 (2025-07-28)
+
+### Feat
+
+- **plotting**: :sparkles: force individual view to be square
+- **plotting**: :sparkles: Change scale on histogram to log
+- **plotting**: :sparkles: Added colourbar showing speed information to individual view
+- **plotting**: :sparkles: Added speed / height vs distance chart and adjusted sizing
+- **core**: :sparkles: added cumulative distance to parse_gpx_to_dataframe
+- **plotting**: :sparkles: Added values to single track view annotations
+- **plotting**: :sparkles: Add colourbar for speed values to individual view
+
+### Fix
+
+- **plotting**: :art: adjust structure of annotations
+- **plotting**: :bug: Added the rest of the code for speed / height vs distance graph
+- **plotting**: :bug: changed m/s to km/h in speed vs time graph, in fitting with earlier changes
+- **plotting**: :construction: Manually set combined map extents coordinates to Hamburg
+- **plotting**: Changed speed from m/s to km/h
+- **core**: :bug: improve speed_list generation, make sure values are not None
+- **core**: :bug: Added error handling if random track folder contains no gpx files
+
+### Refactor
+
+- **core**: removed now unneeded assignments
+- **core**: :art: improved readablity
+
 ## 0.1.0 (2025-07-21)
 
 ### Feat

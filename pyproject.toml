@@ -1,6 +1,6 @@
 [tool.poetry]
 name        = "gpx-explorer"
-version     = "0.1.0"
+version     = "0.2.0"
 description = "Visualise and Analyse GPX files"
 authors     = ["jannisremm <128300711+jannisremm@users.noreply.github.com>"]
 
