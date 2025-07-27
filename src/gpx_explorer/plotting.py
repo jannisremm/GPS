@@ -140,6 +140,8 @@ def plot_overview(
     ax2.set_xlabel("Longitude")
     ax2.set_ylabel("Latitude")
 
+    ax2.set_box_aspect(1)
+
     fig.colorbar(
         speed_chart,
         ax=ax2,
