@@ -107,7 +107,7 @@ def plot_overview(
     ax1.set_xlabel("Longitude")
     ax1.set_ylabel("Latitude")
 
-    ax2.set_title("randomly selected track")
+    ax2.set_title("Randomly selected track")
 
     speed_chart = ax2.scatter(
         df_single_track.longitude,
@@ -123,6 +123,14 @@ def plot_overview(
 
     ax2.set_xlabel("Longitude")
     ax2.set_ylabel("Latitude")
+
+    fig.colorbar(
+        speed_chart,
+        ax=ax2,
+        label="Speed (km/h)",
+        location="right",
+        shrink=0.7,
+    )
 
     speed_idx, height_idx = get_track_extremes(df_single_track)
 
