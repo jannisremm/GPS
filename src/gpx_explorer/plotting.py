@@ -7,6 +7,7 @@ from pathlib import Path
 import cartopy.crs as ccrs
 import gpxpy
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import pandas as pd
 
 from .core import (
@@ -64,7 +65,9 @@ def plot_overview(
     df_single_track["speed"].hist(ax=ax0, bins=50, log=True)
 
     ax0.set_yscale("log")
-    ax0.set_ylim(0, None) # Shows a warning  in the console, but otherwise values of 1 wouldn't show
+    ax0.set_ylim(
+        0, None
+    )  # Shows a warning  in the console, but otherwise values of 1 wouldn't show
 
     ax0.yaxis.set_major_locator(mticker.LogLocator(base=10))
     ax0.yaxis.set_minor_locator(
@@ -158,17 +161,17 @@ def plot_overview(
     single_track_top_height_latitude = df_single_track.at[height_idx, "latitude"]
 
     ax2.annotate(
-        f"Top speed {df_single_track['speed'].max():.1f} km/h",
+        f"Top speed:\n{df_single_track['speed'].max():.1f} km/h",
         xy=(single_track_top_speed_longitude, single_track_top_speed_latitude),
         xycoords=ccrs.PlateCarree(),
         xytext=(20, 20),
         textcoords="offset points",
         arrowprops=dict(arrowstyle="->", color="red", lw=1),
-        fontsize=12,
+        fontsize=10,
         color="red",
     )
     ax2.annotate(
-        f"Highest Point {df_single_track['height'].max():.1f} m",
+        f"Highest Point:\n{df_single_track['height'].max():.1f} m",
         xy=(
             single_track_top_height_longitude,
             single_track_top_height_latitude,
@@ -177,7 +180,7 @@ def plot_overview(
         xytext=(20, 20),
         textcoords="offset points",
         arrowprops=dict(arrowstyle="->", color="red", lw=1),
-        fontsize=12,
+        fontsize=10,
         color="red",
     )
 
