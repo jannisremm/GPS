@@ -41,9 +41,9 @@ def plot_overview(
     outfile_dir: Path | str = "Results",
 ) -> Path:
     """creates an overview plot from df_all_tracks, and detail views from df_single_track"""
-    fig = plt.figure(figsize=(16, 9))
+    fig = plt.figure(figsize=(18, 12))
 
-    gs = fig.add_gridspec(2, 3)
+    gs = fig.add_gridspec(3, 3)
 
     # Single track histogram
     ax0 = fig.add_subplot(gs[0, 2])
@@ -51,8 +51,10 @@ def plot_overview(
     ax1 = fig.add_subplot(gs[0, 0], projection=ccrs.Mercator())
     # Single track detail view
     ax2 = fig.add_subplot(gs[0, 1], projection=ccrs.Mercator())
-    # Single track speed/height/hdop vs time
+    # Single track speed / height / hdop vs time
     ax3 = fig.add_subplot(gs[1, :])
+    # Single track speed / height vs distance
+    ax4 = fig.add_subplot(gs[2, :])
 
     fig.suptitle("GPS tracks overview")
 
