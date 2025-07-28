@@ -101,31 +101,19 @@ options:
 ---
 ### Outputs
 
-- \`\` – written to the current working directory when you pass a directory. Reused on subsequent runs unless `-f/--force_csv` is given.
-- \`\` – saved when `--overview` is used.
+- `combined_gpx_tracks.csv` – written to the current working directory when you pass a directory. Reused on subsequent runs unless `-f/--force_csv` is given.
+- `YYYY-MM-DD - HH-MM-SS.png` – saved in Results folder when `--overview` is used.
 
-> The combined map currently uses hard‑coded extents around **Hamburg**. Adjust them in `plot_overview()` if your tracks are elsewhere. In future releases the overview will show the most frequented area.
+> The combined map currently uses hard‑coded extents around **Hamburg**. Adjust them in `plot_overview()` if your tracks are elsewhere. In future releases the overview will automatically adjust to show the most frequented area.
 
 ---
 
 ## Development
 
-- Type checking: `poetry run mypy`
-- Tests & coverage: `poetry run pytest`
+
+- Packaging managed with **poetry**
 - Versioning & changelog: managed with **commitizen**. See `CHANGELOG.md`.
 
-### Project layout
-
-```
-src/
-  gpx_explorer/
-    __init__.py
-    cli.py
-    core.py
-    plotting.py
-```
-
----
 
 ## Status & roadmap
 
