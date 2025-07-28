@@ -64,7 +64,7 @@ def plot_overview(
     ax0.set_title("Speed Histogram")
     ax0.set_xlabel("Kilometers per Hour")
 
-    df_single_track["speed"].hist(ax=ax0, bins=50, log=True)
+    df_single_track["speed"].hist(ax=ax0, bins=50, log=True, color="tab:orange")
 
     ax0.set_yscale("log")
     ax0.set_ylim(
@@ -121,9 +121,6 @@ def plot_overview(
         s=1,
         c=df_single_track["speed"],
         cmap="turbo",
-        # norm=colors.LogNorm(
-        #     df_single_track["speed"].min(), df_single_track["speed"].max()
-        # ),
     )
 
     ax2.set_xlabel("Longitude")
@@ -170,21 +167,18 @@ def plot_overview(
         color="red",
     )
 
-    ax3.plot(df_single_track.time, df_single_track.height, c="red", label="Height(m)")
     ax3.plot(
-        df_single_track.time, df_single_track.speed, c="green", label="Speed(km/h)"
+        df_single_track.time, df_single_track.height, c="tab:green", label="Height(m)"
     )
-    ax3.plot(
-        df_single_track.time,
-        df_single_track.hdop,
-        c="blue",
-        label="GPS h/v dop",
-        linestyle="dotted",
-    )
+    ax3.set_ylabel("Height (m)", fontsize=12)
+    ax3.yaxis.label.set_color("tab:green")
 
-    ax3.legend(
-        loc="best", frameon=True, fancybox=True, framealpha=0.9, title="Measurements"
+    ax3b = ax3.twinx()
+    ax3b.plot(
+        df_single_track.time, df_single_track.speed, c="tab:orange", label="Speed(km/h)"
     )
+    ax3b.set_ylabel("Speed (km/h)", fontsize=12)
+    ax3b.yaxis.label.set_color("tab:orange")
 
     ax3.set_xlabel("Time")
 
@@ -193,11 +187,23 @@ def plot_overview(
     )
 
     ax4.plot(
-        df_single_track.distance, df_single_track.speed, c="green", label="Speed(km/s)"
+        df_single_track.distance,
+        df_single_track.height,
+        c="tab:green",
+        label="Height(m)",
     )
-    ax4.plot(
-        df_single_track.distance, df_single_track.height, c="red", label="Height(m)"
+    ax4.yaxis.label.set_color("tab:green")
+    ax4.set_ylabel("Height (m)", fontsize=12)
+
+    ax4b = ax4.twinx()
+    ax4b.plot(
+        df_single_track.distance,
+        df_single_track.speed,
+        c="tab:orange",
+        label="Speed(km/s)",
     )
+    ax4b.yaxis.label.set_color("tab:orange")
+    ax4b.set_ylabel("Speed (km/h)", fontsize=12)
 
     ax4.set_xlabel("Distance (km)")
 
