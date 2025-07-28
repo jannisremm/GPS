@@ -3,9 +3,11 @@ from __future__ import annotations
 import os
 from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import cartopy.crs as ccrs
 import gpxpy
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import pandas as pd
@@ -185,6 +187,10 @@ def plot_overview(
     )
 
     ax3.set_xlabel("Time")
+
+    ax3.xaxis.set_major_formatter(
+        mdates.DateFormatter("%H:%M", tz=ZoneInfo("Europe/Berlin"))
+    )
 
     ax4.plot(
         df_single_track.distance, df_single_track.speed, c="green", label="Speed(km/s)"
