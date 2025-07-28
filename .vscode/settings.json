@@ -3,7 +3,8 @@
         "tests",
         "plotting",
         "meta",
-        "core"
+        "core",
+        "docs"
     ],
     "python.envFile": "${workspaceFolder}/.venv",
     "python-envs.defaultPackageManager": "ms-python.python:pip",
