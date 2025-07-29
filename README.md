@@ -26,9 +26,17 @@ I have been recording a lot of GPX logs since moving to Hamburg, and wanted to c
 
 ## Demo
 
+Example output from own gathered data.
+
 ![example figure](example_output.png)
 
-*(Tracks around Hamburg - red line highlights the randomly‑chosen ride; colour scale shows speed; annotations mark top speed & highest point.)*
+**Combined GPS tracks** Shows extent of all logged journeys. A randomly selected track is highlighted in red
+
+**Randomly selected track** Shows detail view of a single track. It is coloured based on speed, annotations show top speed and the highest point
+
+**Speed histogram** Histogram of speed values from all points in the randomly selected track. Log scale makes short fast journeys more prominent
+
+The two plots below show **Height and Speed** against **Time** and **Distance** respectively. Periods without movement get compressed in the Time graph, however movement is still recorded due to imprecise GPS readings
 
 ---
 
