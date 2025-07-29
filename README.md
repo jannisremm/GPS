@@ -61,7 +61,7 @@ pip install -e .
 ```
 
 
-*Python ≥ 3.10 is recommended.*
+*Python ≥ 3.11 is recommended.*
 
 ---
 
@@ -125,7 +125,7 @@ options:
 
 ## Status & roadmap
 
-The main branch corresponds to **v0.2.0** (changelog dated **2025‑07‑28**). Recent work added cumulative distance, log‑scaled histogram, colourbar for speed, a speed/height vs distance plot, and value annotations. See `CHANGELOG.md` for details.
+The main branch corresponds to **v0.2.1** (changelog dated **2025‑07‑28**). Recent work added cumulative distance, log‑scaled histogram, colourbar for speed, a speed/height vs distance plot, and value annotations. See `CHANGELOG.md` for details.
 
 **Possible next steps**
 
