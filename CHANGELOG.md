@@ -1,3 +1,10 @@
+## 0.2.1 (2025-07-29)
+
+### Fix
+
+- **plotting**: Removed legends from line graphs and coloured axis labels instead
+- **plotting**: :bug: Fixed time formatting on speed/height vs time graph
+
 ## 0.2.0 (2025-07-28)
 
 ### Feat
