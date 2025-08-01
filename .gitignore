@@ -7,3 +7,4 @@ ruff.toml
 *.csv
 *.pyc
 .coverage
+*.npy
