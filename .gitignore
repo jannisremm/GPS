@@ -5,3 +5,5 @@ src/gpx_explorer/__pycache__
 test.py
 ruff.toml
 *.csv
+*.pyc
+.coverage
