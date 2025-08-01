@@ -8,7 +8,7 @@ from gpx_explorer.core import (
 
 
 def test_get_track_extremes() -> None:
-    """Indices of maximum speed and height should be returned."""
+    """Should return correct indices for maximum Speed and Height"""
 
     df = pd.DataFrame({"speed": [1, 5, 2, 3], "height": [5, 1, 10, 3]})
 
